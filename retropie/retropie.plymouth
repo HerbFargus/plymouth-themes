@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=RetroPie
+Description=Theme for RetroPie retro gaming distribution
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/retropie
+ScriptFile=/usr/share/plymouth/themes/retropie/retropie.script
