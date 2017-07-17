@@ -1,0 +1,272 @@
+
+Window.SetBackgroundTopColor(0.234, 0.43, 0.705);
+Window.SetBackgroundBottomColor(0.16, 0.25, 0.44);
+
+cache_rotate = fun (image_index, angle){
+
+    angle += (Math.Pi * 2) * 32;
+    angle %= Math.Pi * 2;
+    int_angle = Math.Int((angle / (Math.Pi * 2)) * 100);
+    if (global.image_cache[image_index][int_angle]){
+        return image_cache[image_index][int_angle];
+        }
+    myimage = fluff_image[image_index];
+    myimage = myimage.Rotate(angle);
+    image_cache[image_index][int_angle] = myimage;
+    return myimage;
+    };
+ 
+
+fun reposition_sprite(sprite, x, y, z, x2, y2, z2){
+    
+    xy_distane = Math.Sqrt ((x - x2) * (x - x2) + (y - y2) * (y - y2));
+    angle_from_xy_plane = Math.ATan2 (xy_distane, z - z2);
+    seed_offset = 12 - Math.Sin(angle_from_xy_plane) * 50;
+    image_index = fluff_image_count - 1 - Math.Int(fluff_image_count * (Math.Abs(angle_from_xy_plane / (Math.Pi / 2) - 1)));
+    image_index = Math.Clamp(image_index, 0, fluff_image_count-1);
+    angle_around_xy = Math.ATan2 (y-y2, x-x2) - Math.Pi/2;
+    
+    myimage = cache_rotate(image_index, angle_around_xy);
+    
+    y -= myimage.GetHeight()/2 + -1* Math.Cos(angle_around_xy) * seed_offset;
+    x -= myimage.GetWidth()/2  - -1* Math.Sin(angle_around_xy) * seed_offset;
+    
+    sprite.SetImage(myimage);
+    sprite.SetPosition(x, y, z);
+    }
+
+window_width = Window.GetWidth();
+window_height = Window.GetHeight();
+
+
+logo.image = Image("logo.png");
+logo.sprite = Sprite(logo.image);
+logo.sprite.SetZ (10000);
+
+
+stem.image = stem.origimage = Image("stem.png");
+stem.sprite = Sprite();
+stem.sprite.SetX (100);     # Place in the middle of the screen
+stem.sprite.SetY (Window.GetHeight() - stem.image.GetHeight());
+stem.sprite.SetZ (0);
+
+core_x = 125;
+core_y = Window.GetHeight() - stem.image.GetHeight() + 15;
+core_d = 15;
+
+
+index = 0;
+while (1){
+    fluff_image[index] = Image("fluff-" + index + ".png");
+    if (!fluff_image[index]) break;
+    index++;
+    }
+fluff_image_count = index;
+
+fluff_count = 20;
+for (index = 0; index < fluff_count; index++){
+    fluff[index].sprite = Sprite();
+    distance = Math.Cos(8+index*1.3)*core_d;
+    fluff[index].x = core_x + Math.Cos(2+index*100)*distance;
+    fluff[index].mx = 20+(distance - Math.Cos(2+index*100)*distance);
+    fluff[index].y = core_y + Math.Sin(2+index*100)*distance;
+    fluff[index].my = 0;
+    fluff[index].x2 = core_x + 10*Math.Cos(2+index*100)*distance;
+    fluff[index].y2 = core_y + 10*Math.Sin(2+index*100)*distance;
+    fluff[index].z = 0;
+    fluff[index].mz = 0;
+    fluff[index].z2 = 250;
+    }
+rand=0;
+
+down_draft = 0;
+
+speed_limit =  30;
+damp = 15;
+drag = 0.5;
+speed = 1;
+fun refresh (){
+    rand++;
+    down_draft = Math.Min(down_draft+1, 150);
+    
+    if (status == "normal"){
+        logo.sprite.SetX (Window.GetWidth()  / 2 - logo.image.GetWidth()  / 2);     # Place in the middle of the screen
+        logo.sprite.SetY (Window.GetHeight() / 2 - logo.image.GetHeight() / 2);
+        }
+    else {
+        logo.sprite.SetX (0);
+        logo.sprite.SetY (0);
+        }
+    stem.image = stem.origimage.Rotate(Math.Sin(rand/40)/20);
+    stem.sprite.SetImage(stem.image);
+    stem.sprite.SetX (100 + Math.Sin(Math.Sin(rand/40)/20) * stem.image.GetHeight());
+
+
+    for (index = 0; index < fluff_count; index++){
+        for (redo = 0; redo<2; redo++){
+            grind = 10 * (window_height + window_width) / Math.Sqrt((fluff[index].y - window_height/2)*(fluff[index].y - window_height/2) + (fluff[index].x - window_width/2)*(fluff[index].x - window_width/2));
+
+            v = (fluff[index].x2 - fluff[index].x)/10;
+            fluff[index].mx += v/damp - fluff[index].mx/grind ;
+            fluff[index].x += Math.Clamp(fluff[index].mx/damp, -speed_limit, speed_limit);
+            fluff[index].x2 -= v/7;
+            v = (fluff[index].y2 - fluff[index].y)/10;
+            fluff[index].my += v/damp - fluff[index].my/grind;
+            fluff[index].y += Math.Clamp(fluff[index].my/damp, -speed_limit, speed_limit);
+            fluff[index].y2 -= v/7;
+            v = (fluff[index].z2 - fluff[index].z)/10;
+            fluff[index].mz += v/damp - fluff[index].mz/grind;
+            fluff[index].z += Math.Clamp(fluff[index].mz/damp, -speed_limit, speed_limit);
+            fluff[index].z2 -= v/7;
+
+            v = (fluff[index].y2 / (window_height/2) - 1);
+            fluff[index].x2 += (v*v*v+v*3) * speed * (1 + Math.Sin((rand/7+fluff[index].z2)/17));
+//            if ((window_height - fluff[index].y) < 200) fluff[index].x2 += Math.Max(20*(1-fluff[index].x2/window_width*2), 0) ;
+            v = (fluff[index].x2 / (window_width/2) - 1);
+            fluff[index].y2 -= (v*v*v*2+v*3)  * speed * (1 + Math.Cos((rand/3+fluff[index].x2)/11));
+            fluff[index].z2 += (v*v*v*2+v*3)  * speed * (1 + Math.Cos((rand/3+fluff[index].y2)/13));
+
+            fluff[index].x2 = Math.Clamp(fluff[index].x2, 0, window_width);
+            fluff[index].y2 = Math.Clamp(fluff[index].y2, 0, window_height);
+            fluff[index].z2 = Math.Clamp(fluff[index].z2, -500, 500);
+            }
+        
+        
+        reposition_sprite(fluff[index].sprite, fluff[index].x, fluff[index].y, fluff[index].z, fluff[index].x2, fluff[index].y2-down_draft, fluff[index].z2);
+        }
+    }
+
+Plymouth.SetRefreshFunction (refresh);
+
+#----------------------------------------- Dialogue --------------------------------
+
+status = "normal";
+
+fun dialog_setup()
+  {
+    local.box;
+    local.lock;
+    local.entry;
+    
+    box.image = Image("box.png");
+    lock.image = Image("lock.png");
+    entry.image = Image("entry.png");
+    
+    box.sprite = Sprite(box.image);
+    box.x = Window.GetWidth()  / 2 - box.image.GetWidth ()/2;
+    box.y = Window.GetHeight() / 2 - box.image.GetHeight()/2;
+    box.z = 10000;
+    box.sprite.SetPosition(box.x, box.y, box.z);
+    
+    lock.sprite = Sprite(lock.image);
+    lock.x = box.x + box.image.GetWidth()/2 - (lock.image.GetWidth() + entry.image.GetWidth()) / 2;
+    lock.y = box.y + box.image.GetHeight()/2 - lock.image.GetHeight()/2;
+    lock.z = box.z + 1;
+    lock.sprite.SetPosition(lock.x, lock.y, lock.z);
+    
+    entry.sprite = Sprite(entry.image);
+    entry.x = lock.x + lock.image.GetWidth();
+    entry.y = box.y + box.image.GetHeight()/2 - entry.image.GetHeight()/2;
+    entry.z = box.z + 1;
+    entry.sprite.SetPosition(entry.x, entry.y, entry.z);
+    
+    global.dialog.box = box;
+    global.dialog.lock = lock;
+    global.dialog.entry = entry;
+    global.dialog.bullet_image = Image("bullet.png");
+    dialog_opacity (1);
+  }
+    
+fun dialog_opacity(opacity)
+  {
+    dialog.box.sprite.SetOpacity (opacity);
+    dialog.lock.sprite.SetOpacity (opacity);
+    dialog.entry.sprite.SetOpacity (opacity);
+    for (index = 0; dialog.bullet[index]; index++)
+      {
+        dialog.bullet[index].sprite.SetOpacity(opacity);
+      }
+  }
+
+fun display_normal_callback ()
+  {
+    global.status = "normal";
+    if (global.dialog)
+      dialog_opacity (0);
+  }
+
+fun display_password_callback (prompt, bullets)
+  {
+    global.status = "password";
+    if (!global.dialog)
+	dialog_setup();
+    else
+	dialog_opacity(1);
+    for (index = 0; dialog.bullet[index] || index < bullets; index++)
+      {
+        if (!dialog.bullet[index])
+          {
+            dialog.bullet[index].sprite = Sprite(dialog.bullet_image);
+            dialog.bullet[index].x = dialog.entry.x + index * dialog.bullet_image.GetWidth();
+            dialog.bullet[index].y = dialog.entry.y + dialog.entry.image.GetHeight() / 2 - dialog.bullet_image.GetHeight() / 2;
+            dialog.bullet[index].z = dialog.entry.z + 1;
+            dialog.bullet[index].sprite.SetPosition(dialog.bullet[index].x, dialog.bullet[index].y, dialog.bullet[index].z);
+          }
+        if (index < bullets)
+          dialog.bullet[index].sprite.SetOpacity(1);
+        else
+          dialog.bullet[index].sprite.SetOpacity(0);
+      }
+  }
+
+Plymouth.SetDisplayNormalFunction(display_normal_callback);
+Plymouth.SetDisplayPasswordFunction(display_password_callback);
+
+#----------------------------------------- Progress Bar --------------------------------
+
+progress_box.image = Image("progress_box.png");
+progress_box.sprite = Sprite(progress_box.image);
+
+progress_box.x = Window.GetWidth()  / 2 -    progress_box.image.GetWidth()  / 2;
+progress_box.y = Window.GetHeight() * 0.75 - progress_box.image.GetHeight() / 2;
+progress_box.sprite.SetPosition(progress_box.x, progress_box.y, 0);
+
+progress_bar.original_image = Image("progress_bar.png");
+progress_bar.sprite = Sprite();
+
+progress_bar.x = Window.GetWidth()  / 2 -        progress_bar.original_image.GetWidth() / 2;
+progress_bar.y = Window.GetHeight() / 2 * 1.5  - progress_box.image.GetHeight() / 2 + (progress_box.image.GetHeight() - progress_bar.original_image.GetHeight()) / 2;
+progress_bar.sprite.SetPosition(progress_bar.x, progress_bar.y, 1);
+
+fun progress_callback (duration, progress)
+  {
+    if (progress_bar.image.GetWidth () != Math.Int (progress_bar.original_image.GetWidth () * progress))
+      {
+        progress_bar.image = progress_bar.original_image.Scale(progress_bar.original_image.GetWidth(progress_bar.original_image) * progress, progress_bar.original_image.GetHeight());
+        progress_bar.sprite.SetImage (progress_bar.image);
+      }
+  }
+
+Plymouth.SetBootProgressFunction(progress_callback);
+
+#----------------------------------------- Quit --------------------------------
+
+fun quit_callback ()
+{
+  logo.sprite.SetOpacity (1);
+}
+
+Plymouth.SetQuitFunction(quit_callback);
+
+#----------------------------------------- Message --------------------------------
+
+message_sprite = Sprite();
+message_sprite.SetPosition(10, 10, 10000);
+
+fun message_callback (text)
+{
+  my_image = Image.Text(text, 1, 1, 1);
+  message_sprite.SetImage(my_image);
+}
+
+Plymouth.SetMessageFunction(message_callback);
