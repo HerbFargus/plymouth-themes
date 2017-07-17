@@ -54,6 +54,16 @@ maze_sprite_bottom.SetX (Window.GetWidth () / 2 - maze_sprite_bottom.GetImage().
 maze_sprite_bottom.SetY (Window.GetHeight() / 1.45 - maze_sprite_bottom.GetImage().GetHeight() / 1.45);
 maze_sprite_bottom.SetZ (10000);
 
+#----------------------------------------- Dot Sprites --------------------------------
+
+# small_dot_image = Image("small_dot.png");
+# resized_small_dot_image = small_dot_image.Scale(4, 4);
+# small_dot_sprite = Sprite (resized_small_dot_image);
+# 
+# small_dot_sprite.SetX (Window.GetWidth () / 2 - small_dot_sprite.GetImage().GetWidth() / 2);
+# small_dot_sprite.SetY (Window.GetHeight() / 1.51 - small_dot_sprite.GetImage().GetHeight() / 1.5);
+# maze_sprite_top.SetZ (5000);
+
 #----------------------------------------- Pacman Animation --------------------------------
 
     for (i = 0; i < 3; i++)
