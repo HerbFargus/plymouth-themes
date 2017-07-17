@@ -35,6 +35,25 @@
 Window.SetBackgroundTopColor (0, 0, 0);
 Window.SetBackgroundBottomColor (0, 0, 0);
 
+#----------------------------------------- Maze Sprite --------------------------------
+
+screen_width = Window.GetWidth();
+screen_height = Window.GetHeight();
+
+maze_image = Image("maze.png");
+resized_maze_image = maze_image.Scale(screen_width, 1);
+resized_maze_image2 = maze_image.Scale(screen_width, 1);
+maze_sprite_top = Sprite (resized_maze_image);
+maze_sprite_bottom = Sprite (resized_maze_image2);
+
+maze_sprite_top.SetX (Window.GetWidth () / 2 - maze_sprite_top.GetImage().GetWidth() / 2);
+maze_sprite_top.SetY (Window.GetHeight() / 1.58 - maze_sprite_top.GetImage().GetHeight() / 1.58);
+maze_sprite_top.SetZ (10000);
+
+maze_sprite_bottom.SetX (Window.GetWidth () / 2 - maze_sprite_bottom.GetImage().GetWidth() / 2);
+maze_sprite_bottom.SetY (Window.GetHeight() / 1.45 - maze_sprite_bottom.GetImage().GetHeight() / 1.45);
+maze_sprite_bottom.SetZ (10000);
+
 #----------------------------------------- Pacman Animation --------------------------------
 
     for (i = 0; i < 3; i++)
