@@ -125,8 +125,8 @@ fun StringToInteger (str) {
 
 #-----------------------------------------------------------------------------
 
-Window.SetBackgroundTopColor (1.0, 1.0, 1.0);     # Nice colour on top of the screen fading to
-Window.SetBackgroundBottomColor (1.0, 1.0, 1.0);  # an equally nice colour on the bottom
+Window.SetBackgroundTopColor (0, 0, 0);     # Nice colour on top of the screen fading to
+Window.SetBackgroundBottomColor (0, 0, 0);  # an equally nice colour on the bottom
 
 logo_filename = "retropie_logo.png";
 progress_dot_off_filename = "dot_grey.png";
