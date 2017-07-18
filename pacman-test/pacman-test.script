@@ -1,24 +1,36 @@
 # This is an example plymouth plugin script
 
 # Load an image
-pacman_image = Image("pacman0.png");
+# pacman_image = Image("pacman0.png");
 
 # Create a sprite
-pacman_sprite = Sprite(pacman_image);
-
-# Add your code here
+# pacman_sprite = Sprite(pacman_image);
 
 #-----------------------Place in Center-----------------------
 
-pacman_sprite.SetX(Window.GetWidth()  / 2 - pacman_image.GetWidth () / 2); # Place in horizontal centre
-pacman_sprite.SetY(Window.GetHeight() / 2 - pacman_image.GetHeight() / 2); # Place in vertical centre
-pacman_sprite.SetZ(10000); # Place in front
+# pacman_sprite.SetX(Window.GetWidth()  / 2 - pacman_image.GetWidth () / 2); # Place in horizontal centre
+# pacman_sprite.SetY(Window.GetHeight() / 2 - pacman_image.GetHeight() / 2); # Place in vertical centre
+# pacman_sprite.SetZ(10000); # Place in front
 
+#----------------------------------------- Pacman Animation --------------------------------
 
+for (i = 0; i < 4; i++) # Loop through 4 pacman sprites
+  pacman_images[i] = Image("pacman" + i + ".png"); # sprites named pacman0.png-pacman3.png
+pacman_sprite = Sprite();
+
+progress = 0;
 
 fun refresh_callback ()
   {
-    # Currently we do nothing here
+    
+progress++;
+
+pacman_sprite.SetX (Window.GetWidth () / 2 - pacman_sprite.GetImage().GetWidth () / 2);
+pacman_sprite.SetY (Window.GetHeight() / 2 - pacman_sprite.GetImage().GetHeight() / 2);
+pacman_sprite.SetZ (10000);
+
+pacman_sprite.SetImage(pacman_images[Math.Int(progress / 4) % 4]);
+
   }
   
 Plymouth.SetRefreshFunction (refresh_callback);
