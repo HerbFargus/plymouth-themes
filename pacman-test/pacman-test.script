@@ -8,10 +8,11 @@ pacman_sprite = Sprite(pacman_image);
 
 # Add your code here
 
+#-----------------------Place in Center-----------------------
 
-
-
-
+pacman_sprite.SetX(Window.GetWidth()  / 2 - pacman_image.GetWidth () / 2); # Place in horizontal centre
+pacman_sprite.SetY(Window.GetHeight() / 2 - pacman_image.GetHeight() / 2); # Place in vertical centre
+pacman_sprite.SetZ(10000); # Place in front
 
 
 
