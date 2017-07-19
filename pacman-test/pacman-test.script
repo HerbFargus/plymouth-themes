@@ -51,19 +51,20 @@ pacman_sprite = Sprite();
 
 progress = 0;
 
-fun refresh_callback ()
-  {
-    
-progress++;
+fun refresh_callback () {
 
 pacman_sprite.SetX (Window.GetWidth () / 2 - pacman_sprite.GetImage().GetWidth () / 2 );
-pacman_sprite.SetY (Window.GetHeight() / 2 - pacman_sprite.GetImage().GetHeight() / 2 ); 
+pacman_sprite.SetY (Window.GetHeight() / 2 - pacman_sprite.GetImage().GetHeight() / 2 );
 pacman_sprite.SetZ (5000);
+
+progress++;
+
+pacman_sprite.SetX(progress * 4);
 
 pacman_sprite.SetImage(pacman_images[Math.Int(progress / 4) % 4]);
 
-  }
-  
+}
+
 Plymouth.SetRefreshFunction (refresh_callback);
 
 #----------------------------------------- Dialogue --------------------------------
