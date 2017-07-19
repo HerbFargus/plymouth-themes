@@ -12,7 +12,38 @@
 # pacman_sprite.SetY(Window.GetHeight() / 2 - pacman_image.GetHeight() / 2); # Place in vertical centre
 # pacman_sprite.SetZ(10000); # Place in front
 
-#----------------------------------------- Pacman Animation --------------------------------
+#-----------------------Global Variables-----------------------
+
+screen_width = Window.GetWidth();
+screen_height = Window.GetHeight();
+
+#----------------------------------------- Maze Sprite --------------------------------
+
+maze_image = Image("maze.png");
+resized_maze_image = maze_image.Scale(screen_width, 1); 
+
+maze_sprite_1 = Sprite (resized_maze_image);
+maze_sprite_2 = Sprite (resized_maze_image);
+maze_sprite_3 = Sprite (resized_maze_image);
+maze_sprite_4 = Sprite (resized_maze_image);
+
+maze_sprite_1.SetX (Window.GetWidth);
+maze_sprite_1.SetY ((Window.GetHeight() / 2) -12);
+maze_sprite_1.SetZ (10000);
+
+maze_sprite_2.SetX (Window.GetWidth);
+maze_sprite_2.SetY ((Window.GetHeight() / 2) -9);
+maze_sprite_2.SetZ (10000);
+
+maze_sprite_3.SetX (Window.GetWidth);
+maze_sprite_3.SetY ((Window.GetHeight() / 2) +9);
+maze_sprite_3.SetZ (10000);
+
+maze_sprite_4.SetX (Window.GetWidth);
+maze_sprite_4.SetY ((Window.GetHeight() / 2) +12);
+maze_sprite_4.SetZ (10000);
+
+#----------------------------------------- Pacmanimation --------------------------------
 
 for (i = 0; i < 4; i++) # Loop through 4 pacman sprites
   pacman_images[i] = Image("pacman" + i + ".png"); # sprites named pacman0.png-pacman3.png
@@ -25,9 +56,9 @@ fun refresh_callback ()
     
 progress++;
 
-pacman_sprite.SetX (Window.GetWidth () / 2 - pacman_sprite.GetImage().GetWidth () / 2);
-pacman_sprite.SetY (Window.GetHeight() / 2 - pacman_sprite.GetImage().GetHeight() / 2);
-pacman_sprite.SetZ (10000);
+pacman_sprite.SetX (Window.GetWidth () / 2 - pacman_sprite.GetImage().GetWidth () / 2 );
+pacman_sprite.SetY (Window.GetHeight() / 2 - pacman_sprite.GetImage().GetHeight() / 2 ); 
+pacman_sprite.SetZ (5000);
 
 pacman_sprite.SetImage(pacman_images[Math.Int(progress / 4) % 4]);
 
