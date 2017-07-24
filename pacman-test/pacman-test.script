@@ -51,21 +51,31 @@ pacman_sprite = Sprite();
 
 progress = 0;
 
-fun refresh_callback () {
+fun pacman_move () {
 
+# variables to calculate the progress of pacman moving across the screen at original gameplay rate of ~80 pixels per second
+local.screen_width = Window.GetWidth();
+local.pacman_speed = 80; # pixels per second
+local.refresh_rate = 50; # refreshes per second
+local.rate_ratio = (local.pacman_speed / local.refresh_rate );
+local.screen_seconds = (local.screen_width / local.pacman_speed); # seconds it takes to go across the screen width
+local.refresh_ratio = (local.refresh_rate * local.screen_seconds); 
+
+if (progress < (local.screen_width / local.rate_ratio)){
 pacman_sprite.SetX (Window.GetWidth () / 2 - pacman_sprite.GetImage().GetWidth () / 2 );
 pacman_sprite.SetY (Window.GetHeight() / 2 - pacman_sprite.GetImage().GetHeight() / 2 );
 pacman_sprite.SetZ (5000);
-
 progress++;
-
-pacman_sprite.SetX(progress * 4);
-
+pacman_sprite.SetX(progress * local.rate_ratio);
 pacman_sprite.SetImage(pacman_images[Math.Int(progress / 4) % 4]);
-
+}
+else{
+progress = 0;
+Plymouth.SetRefreshFunction (pacman_move);
+}
 }
 
-Plymouth.SetRefreshFunction (refresh_callback);
+Plymouth.SetRefreshFunction (pacman_move);
 
 #----------------------------------------- Dialogue --------------------------------
 
