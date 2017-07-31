@@ -4,5 +4,5 @@ Description=Theme for RetroPie retro gaming distribution with pacman loading bar
 ModuleName=script
 
 [script]
-ImageDir=/usr/share/plymouth/themes/retropie=pacman
+ImageDir=/usr/share/plymouth/themes/retropie-pacman
 ScriptFile=/usr/share/plymouth/themes/retropie-pacman/retropie-pacman.script
