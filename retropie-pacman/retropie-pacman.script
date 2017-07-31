@@ -129,8 +129,8 @@ Window.SetBackgroundTopColor (0, 0, 0);     # Nice colour on top of the screen f
 Window.SetBackgroundBottomColor (0, 0, 0);  # an equally nice colour on the bottom
 
 logo_filename = "retropie_logo.png";
-progress_dot_off_filename = "dot_grey.png";
-progress_dot_on_filename = "dot_red.png";
+progress_dot_off_filename = "smalldot.png";
+progress_dot_on_filename = "bigdot.png";
 password_dot_filename = "password_dot.png";
 password_field_filename = "password_field.png";
 
@@ -150,7 +150,7 @@ logo.sprite.SetImage (logo.resized);
 logo.width =  logo.sprite.GetImage().GetWidth ();
 logo.height = logo.sprite.GetImage().GetHeight ();
 logo.x = Window.GetWidth () / 2 - logo.width / 2;
-logo.y = Window.GetHeight () / 2 - logo.height / 1.5;
+logo.y = Window.GetHeight () / 2.5 - logo.height / 1.5;
 logo.z = 1000;
 
 logo.sprite.SetX (logo.x);
@@ -171,11 +171,11 @@ progress_indicator.bullet_off = Image (progress_dot_off_filename);
 progress_indicator.bullet_on = Image (progress_dot_on_filename);
 progress_indicator.bullet_width = progress_indicator.bullet_off.GetWidth ();
 progress_indicator.bullet_height = progress_indicator.bullet_off.GetHeight ();
-progress_indicator.bullet_hspacing = progress_indicator.bullet_width * 3;
-progress_indicator.width = progress_indicator.bullet_width * 12.5;
+progress_indicator.bullet_hspacing = progress_indicator.bullet_width;
+progress_indicator.width = progress_indicator.bullet_width;
 progress_indicator.height = progress_indicator.bullet_height;
-progress_indicator.y = logo.y + logo.height + (logo.height / 6);
-progress_indicator.x = Window.GetX () + Window.GetWidth () / 40   - progress_indicator.width / 10;  # logo.x + 26;
+progress_indicator.y = ((Window.GetHeight() / 1.5));
+progress_indicator.x = 0; # logo.x + 26;
 
 # use a fixed string with ascending and descending stems to calibrate the
 # bounding box for the first message, so the messages below don't move up
@@ -197,6 +197,105 @@ fun draw_logo () {
     logo.sprite.SetOpacity (1);
 }
 
+#----------------------------------------- Maze Sprites --------------------------------
+
+screen_width = Window.GetWidth();
+
+maze_image = Image("maze.png");
+resized_maze_image = maze_image.Scale(screen_width,1);
+
+maze_sprite_1 = Sprite (resized_maze_image);
+maze_sprite_2 = Sprite (resized_maze_image);
+maze_sprite_3 = Sprite (resized_maze_image);
+maze_sprite_4 = Sprite (resized_maze_image);
+
+maze_sprite_1.SetY ((Window.GetHeight() / 1.5) +12);
+maze_sprite_2.SetY ((Window.GetHeight() / 1.5) +15);
+maze_sprite_3.SetY ((Window.GetHeight() / 1.5) -6);
+maze_sprite_4.SetY ((Window.GetHeight() / 1.5) -9);
+
+
+#----------------------------------------- Pacmanimation --------------------------------
+
+for (i = 0; i < 4; i++)# Loop through 4 pacman sprites
+  pacman_images[i] = Image("pacman" + i + ".png"); # sprites named pacman0.png - pacman3.png
+pacman_sprite = Sprite();
+
+for (i = 0; i < 2; i++)# Loop through 2 ghost sprites
+  redghostright_images[i] = Image("redghostright" + i + ".png"); # sprites named redghostright0.png - redghostright1.png
+redghostright_sprite = Sprite();
+
+for (i = 0; i < 2; i++)# Loop through 2 ghost sprites
+  pinkghostright_images[i] = Image("pinkghostright" + i + ".png"); # sprites named pinkghostright0.png - pinkghostright1.png
+pinkghostright_sprite = Sprite();
+
+for (i = 0; i < 2; i++)# Loop through 2 ghost sprites
+  cyanghostright_images[i] = Image("cyanghostright" + i + ".png"); # sprites named cyanghostright0.png - cyanghostright1.png
+cyanghostright_sprite = Sprite();
+
+for (i = 0; i < 2; i++)# Loop through 2 ghost sprites
+  orangeghostright_images[i] = Image("orangeghostright" + i + ".png"); # sprites named orangeghostright0.png - orangeghostright1.png
+orangeghostright_sprite = Sprite();
+
+
+progress = 0;
+
+fun pacman_move() {
+
+  # variables to calculate the progress of pacman moving across the screen at original gameplay rate of~80 pixels per second
+  local.screen_width = Window.GetWidth();
+  local.pacman_speed = 80; # pixels per second
+  local.refresh_rate = 50; # refreshes per second
+  local.rate_ratio = (local.pacman_speed / local.refresh_rate);
+  local.screen_seconds = (local.screen_width / local.pacman_speed); # seconds it takes to go across the screen width
+  local.refresh_ratio = (local.refresh_rate * local.screen_seconds);
+
+  if (progress < (local.screen_width / local.rate_ratio) +80) {
+    pacman_sprite.SetX(Window.GetWidth() / 2 - pacman_sprite.GetImage().GetWidth() / 2);
+    pacman_sprite.SetY((Window.GetHeight() / 1.5)-4);
+    pacman_sprite.SetZ(5000);
+    progress++;
+    pacman_sprite.SetX((progress * local.rate_ratio)-8);
+    pacman_sprite.SetImage(pacman_images[Math.Int(progress / 4) % 4]);
+  }
+  if (progress < (local.screen_width / local.rate_ratio) +32) {
+    redghostright_sprite.SetX((Window.GetWidth() / 2 - redghostright_sprite.GetImage().GetWidth() / 2));
+    redghostright_sprite.SetY((Window.GetHeight() / 1.5)-4);
+    redghostright_sprite.SetZ(10000);
+    redghostright_sprite.SetX((progress * local.rate_ratio)-32);
+    redghostright_sprite.SetImage(redghostright_images[Math.Int(progress / 2) % 2]);
+    }
+  if (progress < (local.screen_width / local.rate_ratio) +48) {
+    pinkghostright_sprite.SetX((Window.GetWidth() / 2 - pinkghostright_sprite.GetImage().GetWidth() / 2));
+    pinkghostright_sprite.SetY((Window.GetHeight() / 1.5)-4);
+    pinkghostright_sprite.SetZ(10000);
+    pinkghostright_sprite.SetX((progress * local.rate_ratio)-48);
+    pinkghostright_sprite.SetImage(pinkghostright_images[Math.Int(progress / 2) % 2]);
+    }
+  if (progress < (local.screen_width / local.rate_ratio) +64) {
+    cyanghostright_sprite.SetX((Window.GetWidth() / 2 - cyanghostright_sprite.GetImage().GetWidth() / 2));
+    cyanghostright_sprite.SetY((Window.GetHeight() / 1.5)-4);
+    cyanghostright_sprite.SetZ(10000);
+    cyanghostright_sprite.SetX((progress * local.rate_ratio)-64);
+    cyanghostright_sprite.SetImage(cyanghostright_images[Math.Int(progress / 2) % 2]);
+    }
+  if (progress < (local.screen_width / local.rate_ratio) +80) {
+    orangeghostright_sprite.SetX((Window.GetWidth() / 2 - orangeghostright_sprite.GetImage().GetWidth() / 2));
+    orangeghostright_sprite.SetY((Window.GetHeight() / 1.5)-4);
+    orangeghostright_sprite.SetZ(10000);
+    orangeghostright_sprite.SetX((progress * local.rate_ratio)-80);
+    orangeghostright_sprite.SetImage(orangeghostright_images[Math.Int(progress / 2) % 2]);
+    }
+    else {
+    progress = 0;
+    Plymouth.SetRefreshFunction(pacman_move);
+    set_progress_indicator();
+    switch_off_bullets();
+    animate_progress_indicator();
+  }
+}
+
+Plymouth.SetRefreshFunction(pacman_move);
 
 #-----------------------------------------Progress Indicator--------------------------
 fun set_progress_indicator () {
@@ -204,12 +303,12 @@ fun set_progress_indicator () {
     
     # Here we assume that we can store half bullets on each half of the screen
     # together with some spacing
-#    progress_indicator.width = progress_indicator.bullet_width;
-#    local.x = progress_indicator.width
-#    pacman_sprite.SetX (Window.GetWidth () / 2 - pacman_sprite.GetImage().GetWidth() / 2);
     local.x = progress_indicator.x;
+    local.tile_width = 8;
+    local.screen_width = Window.GetWidth();
+    local.dots = local.screen_width / local.tile_width;
     
-    for (index = 0; index <= 40; index++) {
+    for (index = 0; index < local.dots; index++) {
         # Set the "off" bullets
         progress_indicator.bullets_off[index].sprite = Sprite (progress_indicator.bullet_off);
         progress_indicator.bullets_off[index].sprite.SetPosition (local.x, progress_indicator.y, 1000);
@@ -237,6 +336,7 @@ fun set_progress_indicator () {
     #                      ", x logo = " + logo.x + ", y logo = " + logo.y + ", indicator width = " + progress_indicator.width;
     #Debug(progress_indicator.bullets_off[0].x);
 }
+
 
 # We have 2 bullets, one on top of the other:
 # The white one is on top of the red one and the former should
@@ -279,6 +379,8 @@ fun switch_on_bullets () {
 
 # Implement in boot progress callback
 fun animate_progress_indicator (progress, time) {
+
+  local.screen_width = Window.GetWidth();
     if (global.progress_time == NULL) {
         global.progress_time = progress;  #time;
         switch_off_bullets ();
@@ -287,15 +389,15 @@ fun animate_progress_indicator (progress, time) {
 #    Debug ("progress = " + progress + ", time = " + time + " times switched = " + global.times_bullets_switched + " on_off " + global.on_off);
 
 #    if (global.times_bullets_switched == NULL)
-#        global.times_bullets_switched = 20;
+#        global.times_bullets_switched = 5;
 
 #    if (global.on_off == NULL)
 #        global.on_off = 0;
 
-    if ((progress - global.progress_time) >= 0.2) {
+    if ((progress - global.progress_time) >= 0.08) {
         global.progress_time = progress;
         
-        if (global.times_bullets_switched == 40) {
+        if (global.times_bullets_switched == local.dots) {
             # Change which bullets are switched on
             # and which ones are switched off
             global.on_off = !global.on_off;
@@ -304,7 +406,7 @@ fun animate_progress_indicator (progress, time) {
         
         if (global.on_off) {
             switch_on_bullet (progress_indicator.bullets_off, progress_indicator.bullets_on,
-                              global.times_bullets_switched, 1.0);
+                              global.times_bullets_switched, 0);
         }
         else {
             switch_on_bullet (progress_indicator.bullets_on, progress_indicator.bullets_off,
@@ -986,6 +1088,7 @@ Plymouth.SetUpdateStatusFunction (update_status_callback);
 fun refresh_callback ()
 {
     draw_logo ();
+    pacman_move ();
 }
 Plymouth.SetRefreshFunction (refresh_callback);
 
@@ -1017,8 +1120,8 @@ Plymouth.SetDisplayNormalFunction (display_normal_callback);
 # Show the logo and make the progress indicator look full when on exit
 fun quit_callback ()
 {
-    logo.sprite.SetOpacity (1);
-    switch_on_bullets (); 
+    logo.sprite.SetOpacity (0);
+#    switch_on_bullets (); 
 }
 
 Plymouth.SetQuitFunction(quit_callback);
