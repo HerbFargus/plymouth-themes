@@ -1,0 +1,204 @@
+#Basic Plymouth Theme
+
+#-------------------------Window Settings-------------------------
+
+Window.SetBackgroundTopColor (0, 0, 0);     # Nice colour on top of the screen fading to
+Window.SetBackgroundBottomColor (0, 0, 0);  # an equally nice colour on the bottom
+
+screen_width = Window.GetWidth();
+screen_height = Window.GetHeight();
+
+#------------------------------Logo-------------------------------
+
+#initiate logo sprite
+logo_filename = "retropie_logo_wireframe.png";
+logo_image = Image (logo_filename);
+#logo_sprite = Sprite (logo_image);
+
+#scale logo sprite to screen
+
+logo_width = logo_image.GetWidth();
+logo_height = logo_image.GetHeight();
+
+#screen_area = screen_width * screen_height;
+
+if (screen_width > screen_height)
+  {  # Screen width is wider than screen height, we will scale to screen height
+     scale_factor =  screen_height * (20/100);
+  }
+else
+  {  # Screen ratio is wider than image ratio, we will match the screen width
+     scale_factor =  screen_width * (20/100);
+  }
+
+scaled_logo_image = logo_image.Scale(scale_factor, scale_factor);
+
+logo_sprite = Sprite(scaled_logo_image); # Create the a sprite using the scaled image
+
+logo_sprite.SetX(screen_width / 2 - scaled_logo_image.GetWidth() / 2); # Place in the centre 
+logo_sprite.SetY(screen_height / 2 - scaled_logo_image.GetHeight() / 2);
+logo_sprite.SetZ(-10000); # Place right at the front
+
+#------------------------------Animation-------------------------------
+
+alienship_image = Image("alienship.png");
+alienship_sprite = Sprite(alienship_image);
+
+bullet_image = Image("asteroids_bullet.png");
+bullet_sprite1 = Sprite(bullet_image);
+bullet_sprite2 = Sprite(bullet_image);
+bullet_sprite3 = Sprite(bullet_image);
+bullet_sprite4 = Sprite(bullet_image);
+
+for (i = 0; i < 2; i++)
+  asteroidship_images[i] = Image("asteroidship" + i + ".png");
+asteroidship_sprite = Sprite();
+
+#asteroidship_sprite.SetImage(asteroidship_images[Math.Int(progress / 6) % 4]);
+
+progress = 0;
+fun refresh_callback ()
+  {
+    progress++;
+    theta = progress / 100;
+    asteroidship_sprite.SetX((screen_width / 2 + Math.Sin(theta) * scale_factor)-50);
+    asteroidship_sprite.SetY((screen_height / 2 - Math.Cos(theta) * scale_factor)-50);
+    asteroidship_sprite.SetZ(10000); # Place right at the front
+    asteroidship_sprite.SetImage(asteroidship_images[Math.Int(progress / 2) % 2].Rotate(theta));
+
+    bullet_sprite1.SetX(screen_width / 2 + Math.Sin(theta + (1/2)) * scale_factor);
+    bullet_sprite1.SetY(screen_height / 2 - Math.Cos(theta + (1/2)) * scale_factor);
+    bullet_sprite1.SetZ(10000); # Place right at the front
+    bullet_sprite1.SetImage(bullet_image);
+
+    bullet_sprite2.SetX(screen_width / 2 + Math.Sin(theta  + 1) * scale_factor);
+    bullet_sprite2.SetY(screen_height / 2 - Math.Cos(theta  + 1) * scale_factor);
+    bullet_sprite2.SetZ(10000); # Place right at the front
+    bullet_sprite2.SetImage(bullet_image);
+
+    bullet_sprite3.SetX(screen_width / 2 + Math.Sin(theta  + (3/2)) * scale_factor);
+    bullet_sprite3.SetY(screen_height / 2 - Math.Cos(theta  + (3/2)) * scale_factor);
+    bullet_sprite3.SetZ(10000); # Place right at the front
+    bullet_sprite3.SetImage(bullet_image);
+
+    bullet_sprite4.SetX(screen_width / 2 + Math.Sin(theta  + 2) * scale_factor);
+    bullet_sprite4.SetY(screen_height / 2 - Math.Cos(theta  + 2) * scale_factor);
+    bullet_sprite4.SetZ(10000); # Place right at the front
+    bullet_sprite4.SetImage(bullet_image);
+
+    alienship_sprite.SetX((screen_width / 2 + Math.Sin(theta + (5/2)) * scale_factor) -50);
+    alienship_sprite.SetY((screen_height / 2 - Math.Cos(theta + (5/2)) * scale_factor) -50);
+    alienship_sprite.SetZ(10000); # Place right at the front
+    alienship_sprite.SetImage(alienship_image);
+  }
+
+  
+Plymouth.SetRefreshFunction (refresh_callback);
+
+#-------------------------------- Basic Plymouth Boilerplate -----------------------
+
+#----------------------------------------- Dialogue --------------------------------
+
+status = "normal";
+
+fun dialog_setup()
+  {
+    local.box;
+    local.lock;
+    local.entry;
+    
+    box.image = Image("box.png");
+    lock.image = Image("lock.png");
+    entry.image = Image("entry.png");
+    
+    box.sprite = Sprite(box.image);
+    box.x = Window.GetWidth()  / 2 - box.image.GetWidth ()/2;
+    box.y = Window.GetHeight() / 2 - box.image.GetHeight()/2;
+    box.z = 10000;
+    box.sprite.SetPosition(box.x, box.y, box.z);
+    
+    lock.sprite = Sprite(lock.image);
+    lock.x = box.x + box.image.GetWidth()/2 - (lock.image.GetWidth() + entry.image.GetWidth()) / 2;
+    lock.y = box.y + box.image.GetHeight()/2 - lock.image.GetHeight()/2;
+    lock.z = box.z + 1;
+    lock.sprite.SetPosition(lock.x, lock.y, lock.z);
+    
+    entry.sprite = Sprite(entry.image);
+    entry.x = lock.x + lock.image.GetWidth();
+    entry.y = box.y + box.image.GetHeight()/2 - entry.image.GetHeight()/2;
+    entry.z = box.z + 1;
+    entry.sprite.SetPosition(entry.x, entry.y, entry.z);
+    
+    global.dialog.box = box;
+    global.dialog.lock = lock;
+    global.dialog.entry = entry;
+    global.dialog.bullet_image = Image("bullet.png");
+    dialog_opacity (1);
+  }
+    
+fun dialog_opacity(opacity)
+  {
+    dialog.box.sprite.SetOpacity (opacity);
+    dialog.lock.sprite.SetOpacity (opacity);
+    dialog.entry.sprite.SetOpacity (opacity);
+    for (index = 0; dialog.bullet[index]; index++)
+      {
+        dialog.bullet[index].sprite.SetOpacity(opacity);
+      }
+  }
+
+fun display_normal_callback ()
+  {
+    global.status = "normal";
+    if (global.dialog)
+      dialog_opacity (0);
+  }
+
+fun display_password_callback (prompt, bullets)
+  {
+    global.status = "password";
+    if (!global.dialog)
+	dialog_setup();
+    else
+	dialog_opacity(1);
+    for (index = 0; dialog.bullet[index] || index < bullets; index++)
+      {
+        if (!dialog.bullet[index])
+          {
+            dialog.bullet[index].sprite = Sprite(dialog.bullet_image);
+            dialog.bullet[index].x = dialog.entry.x + index * dialog.bullet_image.GetWidth();
+            dialog.bullet[index].y = dialog.entry.y + dialog.entry.image.GetHeight() / 2 - dialog.bullet_image.GetHeight() / 2;
+            dialog.bullet[index].z = dialog.entry.z + 1;
+            dialog.bullet[index].sprite.SetPosition(dialog.bullet[index].x, dialog.bullet[index].y, dialog.bullet[index].z);
+          }
+        if (index < bullets)
+          dialog.bullet[index].sprite.SetOpacity(1);
+        else
+          dialog.bullet[index].sprite.SetOpacity(0);
+      }
+  }
+
+Plymouth.SetDisplayNormalFunction(display_normal_callback);
+Plymouth.SetDisplayPasswordFunction(display_password_callback);
+
+
+#----------------------------------------- Quit --------------------------------
+
+fun quit_callback ()
+{
+}
+
+Plymouth.SetQuitFunction(quit_callback);
+
+#----------------------------------------- Message --------------------------------
+
+message_sprite = Sprite();
+message_sprite.SetPosition(10, 10, 10000);
+
+fun message_callback (text)
+{
+  my_image = Image.Text(text, 1, 1, 1);
+  message_sprite.SetImage(my_image);
+}
+
+Plymouth.SetMessageFunction(message_callback);

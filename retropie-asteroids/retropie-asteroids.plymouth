@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=retropie-asteroids
+Description=Asteroids plymouth theme for RetroPie
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/retropie-asteroids
+ScriptFile=/usr/share/plymouth/themes/retropie-asteroids/retropie-asteroids.script
