@@ -55,3 +55,13 @@ Add your new themes to:
 ```
 /usr/share/plymouth/themes/
 ```
+
+### Ubuntu:
+
+Ubuntu doesn't use plymouth-set-default-theme, but you can use the commands to add a new plymouth theme. 
+
+```
+sudo update-alternatives --install /usr/share/plymouth/themes/default.plymouth default.plymouth /usr/share/plymouth/themes/new-theme/new-theme.plymouth 100
+sudo update-alternatives --config default.plymouth
+sudo update-initramfs -u
+```
