@@ -20,8 +20,6 @@ logo_image = Image (logo_filename);
 logo_width = logo_image.GetWidth();
 logo_height = logo_image.GetHeight();
 
-#screen_area = screen_width * screen_height;
-
 if (screen_width > screen_height)
   {  # Screen width is wider than screen height, we will scale to screen height
      scale_factor =  screen_height * (20/100);
@@ -50,11 +48,10 @@ bullet_sprite2 = Sprite(bullet_image);
 bullet_sprite3 = Sprite(bullet_image);
 bullet_sprite4 = Sprite(bullet_image);
 
+#animate rockets
 for (i = 0; i < 2; i++)
   asteroidship_images[i] = Image("asteroidship" + i + ".png");
 asteroidship_sprite = Sprite();
-
-#asteroidship_sprite.SetImage(asteroidship_images[Math.Int(progress / 6) % 4]);
 
 progress = 0;
 fun refresh_callback ()
